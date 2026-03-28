@@ -1,0 +1,2503 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aryan Maharjan — GRC & Third-Party Risk Analyst</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       THEME TOKENS
+    ═══════════════════════════════════════════ */
+    :root {
+      --transition-theme: 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    [data-theme="dark"] {
+      --bg:          #080a0f;
+      --bg2:         #0c0f18;
+      --bg3:         #111827;
+      --surface:     #141c2a;
+      --surface2:    #1a2438;
+      --border:      rgba(255,255,255,0.06);
+      --border2:     rgba(255,255,255,0.12);
+      --text:        #e2e8f4;
+      --text2:       #7a8ba8;
+      --text3:       #3d4f6b;
+      --accent:      #00e5c3;
+      --accent2:     #ff3b3b;
+      --accent3:     #f5c518;
+      --stamp:       rgba(255,59,59,0.15);
+      --stamp-border: rgba(255,59,59,0.5);
+      --stamp-text:  #ff3b3b;
+      --redact:      #1a2438;
+      --redact-reveal: #e2e8f4;
+      --paper:       #080a0f;
+      --ink:         #e2e8f4;
+      --logo-bg:     #00e5c3;
+      --logo-fg:     #080a0f;
+      --nav-bg:      rgba(8,10,15,0.92);
+      --card-glow:   rgba(0,229,195,0.06);
+      --scan-line:   rgba(0,229,195,0.03);
+      --noise-op:    0.025;
+      --grid-op:     0.04;
+    }
+
+    [data-theme="light"] {
+      --bg:          #f5f0e8;
+      --bg2:         #ede8dc;
+      --bg3:         #e4ddd0;
+      --surface:     #faf7f2;
+      --surface2:    #f0ebe1;
+      --border:      rgba(0,0,0,0.08);
+      --border2:     rgba(0,0,0,0.15);
+      --text:        #1a1410;
+      --text2:       #5a4f42;
+      --text3:       #9a8f82;
+      --accent:      #006b5a;
+      --accent2:     #c0392b;
+      --accent3:     #8b6914;
+      --stamp:       rgba(192,57,43,0.08);
+      --stamp-border: rgba(192,57,43,0.6);
+      --stamp-text:  #c0392b;
+      --redact:      #1a1410;
+      --redact-reveal: #1a1410;
+      --paper:       #f5f0e8;
+      --ink:         #1a1410;
+      --logo-bg:     #006b5a;
+      --logo-fg:     #f5f0e8;
+      --nav-bg:      rgba(245,240,232,0.94);
+      --card-glow:   rgba(0,107,90,0.05);
+      --scan-line:   rgba(0,0,0,0.02);
+      --noise-op:    0.04;
+      --grid-op:     0.06;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background var(--transition-theme), color var(--transition-theme);
+      cursor: crosshair;
+    }
+
+    /* SCAN LINES */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        var(--scan-line) 0px,
+        var(--scan-line) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* NOISE */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: var(--noise-op);
+      pointer-events: none;
+      z-index: 9997;
+      animation: drift 8s linear infinite alternate;
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-10px, -5px); }
+    }
+
+    /* ═══════════════════════════════════════════
+       CUSTOM CURSOR
+    ═══════════════════════════════════════════ */
+    .cursor-dot {
+      position: fixed;
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s;
+      mix-blend-mode: difference;
+    }
+
+    .cursor-ring {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
+      opacity: 0.5;
+    }
+
+    @media (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* ═══════════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 48px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--nav-bg);
+      backdrop-filter: blur(24px) saturate(1.5);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition-theme), border-color var(--transition-theme);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-badge {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      color: var(--logo-fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      transition: background var(--transition-theme), clip-path 0.3s;
+    }
+
+    .nav-logo:hover .nav-logo-badge {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .nav-logo-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text2);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color var(--transition-theme);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .nav-link {
+      padding: 8px 18px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      text-decoration: none;
+      border-right: 1px solid var(--border);
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .nav-link:last-child { border-right: none; }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.25s;
+    }
+
+    .nav-link:hover {
+      color: var(--accent);
+      background: var(--card-glow);
+    }
+
+    .nav-link:hover::before { transform: scaleX(1); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* THEME TOGGLE */
+    .theme-toggle {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+      background: var(--surface);
+      transition: all var(--transition-theme);
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .theme-toggle-track {
+      position: absolute;
+      inset: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3px;
+    }
+
+    .theme-toggle-icon {
+      font-size: 10px;
+      line-height: 1;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .theme-toggle-thumb {
+      position: absolute;
+      width: 18px; height: 18px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      left: 5px;
+      transition: left 0.3s cubic-bezier(0.4,0,0.2,1), background var(--transition-theme);
+    }
+
+    [data-theme="light"] .theme-toggle-thumb {
+      left: 29px;
+    }
+
+    .nav-hire {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 9px 18px;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: all 0.2s;
+      clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    }
+
+    .nav-hire:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    /* HAMBURGER */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px; height: 1.5px;
+      background: var(--text);
+      transition: all 0.3s;
+    }
+
+    /* MOBILE NAV DRAWER */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .mobile-drawer.open { display: flex; }
+
+    .mobile-drawer a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .mobile-drawer a:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════════════
+       LAYOUT UTILITIES
+    ═══════════════════════════════════════════ */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    section { position: relative; z-index: 1; }
+
+    /* SECTION HEADERS */
+    .sec-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .sec-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+    }
+
+    .sec-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--border2);
+      max-width: 48px;
+    }
+
+    .sec-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text3);
+      font-weight: 500;
+    }
+
+    .sec-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 7vw, 88px);
+      letter-spacing: 0.04em;
+      line-height: 0.92;
+      color: var(--text);
+      margin-bottom: 24px;
+      transition: color var(--transition-theme);
+    }
+
+    /* ═══════════════════════════════════════════
+       REDACT EFFECT
+    ═══════════════════════════════════════════ */
+    .redact {
+      position: relative;
+      display: inline;
+      cursor: pointer;
+    }
+
+    .redact::before {
+      content: attr(data-text);
+      position: absolute;
+      left: 0; top: 0;
+      background: var(--redact);
+      color: transparent;
+      border-radius: 2px;
+      padding: 0 4px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      transition: opacity 0.4s, transform 0.4s;
+      letter-spacing: 0.02em;
+    }
+
+    .redact:hover::before {
+      opacity: 0;
+      transform: scaleX(0.95);
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 0 80px;
+      overflow: hidden;
+    }
+
+    /* BACKGROUND GRID */
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      background-position: center center;
+      pointer-events: none;
+    }
+
+    .hero-grid-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 70% 50%, transparent 40%, var(--bg) 100%);
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 80px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* CLEARANCE TAG */
+    .clearance-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--accent);
+      padding: 5px 14px 5px 10px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+
+    .clearance-tag::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(0,229,195,0.06), transparent);
+    }
+
+    .clearance-dot {
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 1.8s step-end infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .clearance-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    /* HERO TITLE */
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 10vw, 130px);
+      line-height: 0.88;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+      color: var(--text);
+      transition: color var(--transition-theme);
+    }
+
+    .hero-title .accent-line {
+      color: var(--accent);
+      display: block;
+      position: relative;
+    }
+
+    .hero-title .accent-line::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 3px; top: 3px;
+      color: var(--accent2);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+
+    .hero-title .accent-line:hover::after { opacity: 0.3; }
+
+    .hero-subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-subtitle::before {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--text3);
+    }
+
+    .hero-desc {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text2);
+      line-height: 1.8;
+      max-width: 520px;
+      margin-bottom: 40px;
+      transition: color var(--transition-theme);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    .btn-prime {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 13px 28px;
+      text-decoration: none;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-prime:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,229,195,0.25);
+    }
+
+    .btn-ghost {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+      padding: 13px 28px;
+      text-decoration: none;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* HERO STATS */
+    .hero-metrics {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .hero-metric {
+      flex: 1;
+      padding: 20px 0;
+      border-right: 1px solid var(--border2);
+    }
+
+    .hero-metric:last-child { border-right: none; }
+
+    .metric-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      line-height: 1;
+      display: block;
+      transition: color var(--transition-theme);
+    }
+
+    .metric-val sup {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      color: var(--accent);
+      vertical-align: super;
+    }
+
+    .metric-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO RIGHT — DOSSIER CARD
+    ═══════════════════════════════════════════ */
+    .dossier-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      padding: 32px;
+      transition: background var(--transition-theme), border-color var(--transition-theme);
+    }
+
+    /* Corner clips */
+    .dossier-card::before,
+    .dossier-card::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+
+    .dossier-card::before {
+      top: -1px; left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .dossier-card::after {
+      bottom: -1px; right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .dossier-corners {
+      position: absolute;
+      top: -1px; left: -1px; right: -1px; bottom: -1px;
+      pointer-events: none;
+    }
+
+    .dossier-corners span {
+      position: absolute;
+      width: 14px; height: 14px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+
+    .dossier-corners span:nth-child(1) { top: 0; right: 0; border-width: 2px 2px 0 0; }
+    .dossier-corners span:nth-child(2) { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+
+    /* STAMP */
+    .dossier-stamp {
+      position: absolute;
+      top: 24px; right: 24px;
+      border: 2px solid var(--stamp-border);
+      padding: 4px 10px;
+      transform: rotate(-12deg);
+      background: var(--stamp);
+      backdrop-filter: blur(4px);
+    }
+
+    .dossier-stamp span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--stamp-text);
+      display: block;
+      line-height: 1.1;
+    }
+
+    /* AVATAR — GENERATIVE SCAN PORTRAIT */
+    .avatar-wrap {
+      width: 80px; height: 80px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -6px;
+      border: 1px solid var(--accent);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      animation: avatar-spin 12s linear infinite;
+    }
+
+    .avatar-ring-2 {
+      position: absolute;
+      inset: -12px;
+      border: 1px dashed var(--border2);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      animation: avatar-spin 20s linear infinite reverse;
+    }
+
+    @keyframes avatar-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .dossier-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 28px;
+      padding-right: 80px;
+    }
+
+    .dossier-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      margin-bottom: 2px;
+      transition: color var(--transition-theme);
+    }
+
+    .dossier-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+    }
+
+    /* CERT GRID */
+    .dossier-section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.3em;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dossier-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .cert-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .cert-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      border: 1px solid rgba(0,229,195,0.2);
+      background: rgba(0,229,195,0.05);
+      padding: 4px 10px;
+      transition: all 0.2s;
+    }
+
+    [data-theme="light"] .cert-pill {
+      border-color: rgba(0,107,90,0.25);
+      background: rgba(0,107,90,0.06);
+    }
+
+    .cert-pill:hover {
+      background: rgba(0,229,195,0.12);
+      border-color: var(--accent);
+    }
+
+    /* FRAMEWORK SCAN */
+    .framework-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .framework-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.2s;
+    }
+
+    .framework-row:last-child { border-bottom: none; }
+
+    .framework-row:hover { padding-left: 6px; }
+
+    .fw-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text2);
+      letter-spacing: 0.08em;
+    }
+
+    .fw-bar-wrap {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin: 0 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fw-bar {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1s cubic-bezier(0.4,0,0.2,1) var(--delay, 0s);
+    }
+
+    .fw-bar.animated { transform: scaleX(1); }
+
+    .fw-pct {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    /* STATUS FOOTER */
+    .dossier-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 18px;
+      margin-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .status-live {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .status-live::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 1.4s step-end infinite;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .social-link {
+      width: 30px; height: 30px;
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      text-decoration: none;
+      font-size: 12px;
+      transition: all 0.2s;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    .social-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--card-glow);
+    }
+
+    /* ═══════════════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════════════ */
+    #about {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition-theme);
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-top: 60px;
+    }
+
+    .about-text {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--text2);
+      line-height: 1.9;
+    }
+
+    .about-text p { margin-bottom: 20px; }
+
+    .about-text strong {
+      color: var(--text);
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    .about-text em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .about-right { display: flex; flex-direction: column; gap: 16px; }
+
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .about-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 0.3s;
+    }
+
+    .about-card:hover::before { transform: scaleY(1); }
+    .about-card:hover { border-color: var(--border2); transform: translateX(4px); }
+
+    .about-card-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.2em;
+      margin-bottom: 8px;
+    }
+
+    .about-card h4 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .about-card p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════════════════════════════
+       EXPERIENCE
+    ═══════════════════════════════════════════ */
+    #experience {
+      padding: 120px 0;
+      transition: background var(--transition-theme);
+    }
+
+    .exp-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      margin-top: 60px;
+    }
+
+    /* STICKY YEAR COLUMN */
+    .exp-years {
+      position: relative;
+    }
+
+    .exp-year-item {
+      position: sticky;
+      top: 100px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 80px;
+      letter-spacing: 0.02em;
+      color: var(--border2);
+      line-height: 1;
+      transition: color 0.3s;
+      user-select: none;
+    }
+
+    .exp-entries {
+      border-left: 1px solid var(--border2);
+    }
+
+    .exp-entry {
+      padding: 0 0 60px 48px;
+      position: relative;
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .exp-entry.vis { opacity: 1; transform: translateX(0); }
+
+    .exp-entry::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: 8px;
+      width: 9px; height: 9px;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      transition: background var(--transition-theme), border-color 0.3s;
+    }
+
+    .exp-entry.current-role::before {
+      background: var(--accent);
+      border-color: var(--accent);
+      animation: pulse-hex 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-hex {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,195,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(0,229,195,0); }
+    }
+
+    .exp-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .exp-date {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .exp-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 1px;
+    }
+
+    .badge-live {
+      color: var(--accent);
+      border: 1px solid rgba(0,229,195,0.3);
+      background: rgba(0,229,195,0.06);
+    }
+
+    .badge-contract {
+      color: var(--accent3);
+      border: 1px solid rgba(245,197,24,0.3);
+      background: rgba(245,197,24,0.06);
+    }
+
+    .exp-role {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-bottom: 3px;
+      transition: color var(--transition-theme);
+    }
+
+    .exp-company {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .exp-body {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+    }
+
+    .exp-body ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .exp-body li {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.6;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .exp-body li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .exp-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .exp-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.12em;
+      background: var(--bg3);
+      padding: 3px 8px;
+      text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════
+       SKILLS
+    ═══════════════════════════════════════════ */
+    #skills {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition-theme);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      margin-top: 60px;
+    }
+
+    .skill-cell {
+      background: var(--surface);
+      padding: 28px;
+      transition: background var(--transition-theme);
+    }
+
+    .skill-cell:hover { background: var(--surface2); }
+
+    .skill-cell-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: var(--border2);
+      line-height: 1;
+      margin-bottom: 12px;
+      transition: color 0.3s;
+    }
+
+    .skill-cell:hover .skill-cell-num { color: var(--accent); }
+
+    .skill-cell h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 14px;
+      transition: color var(--transition-theme);
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .s-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      background: var(--bg3);
+      padding: 3px 8px;
+      letter-spacing: 0.08em;
+      transition: all 0.2s;
+    }
+
+    .skill-cell:hover .s-tag {
+      color: var(--text2);
+    }
+
+    /* ═══════════════════════════════════════════
+       CERTIFICATIONS
+    ═══════════════════════════════════════════ */
+    #certifications {
+      padding: 120px 0;
+      transition: background var(--transition-theme);
+    }
+
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 60px;
+    }
+
+    .cert-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .cert-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,195,0.04) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .cert-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--accent);
+    }
+
+    .cert-card:hover::after { opacity: 1; }
+
+    .cert-card-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+
+    .cert-issuer-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+    }
+
+    .cert-card-name {
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.4;
+      transition: color var(--transition-theme);
+    }
+
+    /* ═══════════════════════════════════════════
+       PROJECTS
+    ═══════════════════════════════════════════ */
+    #projects {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      transition: background var(--transition-theme);
+    }
+
+    .projects-layout {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .project-card.span2 {
+      grid-column: span 2;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s;
+    }
+
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+
+    .proj-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+
+    .proj-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-bottom: 12px;
+      transition: color var(--transition-theme);
+    }
+
+    .proj-desc {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .proj-metrics {
+      display: flex;
+      gap: 28px;
+      margin-bottom: 18px;
+    }
+
+    .proj-metric-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .proj-metric-lbl {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.12em;
+      margin-top: 2px;
+    }
+
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .p-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      background: var(--bg3);
+      padding: 3px 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════
+       CONTACT
+    ═══════════════════════════════════════════ */
+    #contact {
+      padding: 120px 0;
+      transition: background var(--transition-theme);
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-top: 60px;
+      align-items: start;
+    }
+
+    .contact-left p {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text2);
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .contact-links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--border);
+    }
+
+    .contact-link-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text2);
+      transition: all 0.2s;
+    }
+
+    .contact-link-item:last-child { border-bottom: none; }
+
+    .contact-link-item:hover {
+      background: var(--card-glow);
+      color: var(--accent);
+      padding-left: 28px;
+    }
+
+    .cli-icon {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      width: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .cli-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    /* CALENDAR EMBED */
+    .cal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+      transition: background var(--transition-theme), border-color var(--transition-theme);
+    }
+
+    .cal-card::before,
+    .cal-card::after {
+      content: '';
+      position: absolute;
+      width: 12px; height: 12px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+
+    .cal-card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .cal-card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+    .cal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cal-header h4 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .cal-header p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.1em;
+    }
+
+    .cal-body {
+      padding: 8px;
+    }
+
+    .cal-body iframe {
+      border-radius: 2px;
+      display: block;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      position: relative;
+      z-index: 1;
+      transition: background var(--transition-theme);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-left {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-right {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-right a {
+      color: var(--text3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-right a:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════════════
+       SCROLL ANIMATIONS
+    ═══════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1),
+                  transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════════════════
+       MOBILE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .certs-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-center { display: none; }
+      .hamburger { display: flex; }
+      .container { padding: 0 24px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .dossier-card { display: block; }
+      .about-layout { grid-template-columns: 1fr; gap: 40px; }
+      .exp-grid { grid-template-columns: 1fr; }
+      .exp-years { display: none; }
+      .exp-entries { border-left: none; }
+      .exp-entry { padding-left: 24px; }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .certs-grid { grid-template-columns: repeat(2, 1fr); }
+      .projects-layout { grid-template-columns: 1fr; }
+      .project-card.span2 { grid-column: span 1; }
+      .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title { font-size: 68px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .certs-grid { grid-template-columns: 1fr 1fr; }
+      .hero-metrics { flex-wrap: wrap; }
+      .hero-metric { min-width: 33%; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    /* SCROLL INDICATOR */
+    .scroll-line {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: var(--accent);
+      z-index: 10001;
+      transition: width 0.1s;
+    }
+  </style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-line" id="scrollLine"></div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="#about" onclick="closeMobileDrawer()">About</a>
+  <a href="#experience" onclick="closeMobileDrawer()">Experience</a>
+  <a href="#skills" onclick="closeMobileDrawer()">Skills</a>
+  <a href="#certifications" onclick="closeMobileDrawer()">Certs</a>
+  <a href="#projects" onclick="closeMobileDrawer()">Projects</a>
+  <a href="#contact" onclick="closeMobileDrawer()">Hire Me</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo">
+    <div class="nav-logo-badge">AM</div>
+    <span class="nav-logo-text">Aryan Maharjan</span>
+  </a>
+
+  <div class="nav-center">
+    <a href="#about" class="nav-link">About</a>
+    <a href="#experience" class="nav-link">Experience</a>
+    <a href="#skills" class="nav-link">Skills</a>
+    <a href="#certifications" class="nav-link">Certs</a>
+    <a href="#projects" class="nav-link">Projects</a>
+  </div>
+
+  <div class="nav-right">
+    <!-- THEME TOGGLE -->
+    <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+      <div class="theme-toggle-track">
+        <span class="theme-toggle-icon">◐</span>
+        <span class="theme-toggle-icon">○</span>
+      </div>
+      <div class="theme-toggle-thumb"></div>
+    </div>
+    <a href="#contact" class="nav-hire">Hire Me</a>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- LEFT -->
+      <div class="hero-left reveal">
+        <div class="clearance-tag">
+          <div class="clearance-dot"></div>
+          <span class="clearance-text">Available · Remote Worldwide · KTM/UTC+5:45</span>
+        </div>
+
+        <h1 class="hero-title">
+          GRC &amp;<br>
+          <span class="accent-line" data-text="THIRD-PARTY">THIRD-PARTY</span>
+          RISK
+        </h1>
+        <div class="hero-subtitle">Governance · Risk · Compliance</div>
+
+        <p class="hero-desc">
+          Stress-testing what vendors claim against what the evidence actually shows — for Fortune 500 healthcare enterprises. Based in Kathmandu. Working for the world.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#contact" class="btn-prime">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Book a Call
+          </a>
+          <a href="https://drive.google.com/file/d/1ZpJqYzG6tLYCt6h2VIFViUUSfU2hcsww/view?usp=sharing" target="_blank" class="btn-ghost">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download CV
+          </a>
+        </div>
+
+        <div class="hero-metrics">
+          <div class="hero-metric">
+            <span class="metric-val">20<sup>+</sup></span>
+            <div class="metric-label">Vendors Assessed</div>
+          </div>
+          <div class="hero-metric">
+            <span class="metric-val">7<sup>+</sup></span>
+            <div class="metric-label">Certifications</div>
+          </div>
+          <div class="hero-metric">
+            <span class="metric-val">2.5<sup>yr</sup></span>
+            <div class="metric-label">GRC Experience</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — DOSSIER -->
+      <div class="hero-right reveal" style="transition-delay:0.2s">
+        <div class="dossier-card">
+          <div class="dossier-corners">
+            <span></span><span></span>
+          </div>
+
+          <!-- CLASSIFIED STAMP -->
+          <div class="dossier-stamp">
+            <span>OPEN TO</span>
+            <span>HIRE</span>
+          </div>
+
+          <!-- HEADER -->
+          <div class="dossier-header">
+            <div class="avatar-wrap">
+              <!-- GENERATIVE SCAN PORTRAIT -->
+              <svg class="avatar-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <clipPath id="hexClip">
+                    <polygon points="40,2 78,21 78,59 40,78 2,59 2,21"/>
+                  </clipPath>
+                  <linearGradient id="faceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--surface2)"/>
+                    <stop offset="100%" stop-color="var(--bg3)"/>
+                  </linearGradient>
+                  <linearGradient id="scanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.6"/>
+                    <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <!-- BG -->
+                <polygon points="40,2 78,21 78,59 40,78 2,59 2,21" fill="url(#faceGrad)" stroke="var(--border2)" stroke-width="1"/>
+                <!-- Scan lines -->
+                <g clip-path="url(#hexClip)" opacity="0.3">
+                  <line x1="2" y1="12" x2="78" y2="12" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="20" x2="78" y2="20" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="28" x2="78" y2="28" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="36" x2="78" y2="36" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="44" x2="78" y2="44" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="52" x2="78" y2="52" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="60" x2="78" y2="60" stroke="var(--accent)" stroke-width="0.4"/>
+                  <line x1="2" y1="68" x2="78" y2="68" stroke="var(--accent)" stroke-width="0.4"/>
+                </g>
+                <!-- Silhouette -->
+                <g clip-path="url(#hexClip)">
+                  <!-- Body -->
+                  <ellipse cx="40" cy="70" rx="22" ry="14" fill="var(--accent)" opacity="0.15"/>
+                  <path d="M20 80 Q24 58 40 56 Q56 58 60 80 Z" fill="var(--accent)" opacity="0.22"/>
+                  <!-- Head -->
+                  <ellipse cx="40" cy="34" rx="14" ry="16" fill="var(--accent)" opacity="0.25"/>
+                  <!-- Eyes -->
+                  <ellipse cx="34" cy="31" rx="3" ry="2" fill="var(--accent)" opacity="0.8" filter="url(#glow)"/>
+                  <ellipse cx="46" cy="31" rx="3" ry="2" fill="var(--accent)" opacity="0.8" filter="url(#glow)"/>
+                  <!-- Crosshair overlay -->
+                  <line x1="40" y1="2" x2="40" y2="78" stroke="var(--accent)" stroke-width="0.4" opacity="0.3"/>
+                  <line x1="2" y1="40" x2="78" y2="40" stroke="var(--accent)" stroke-width="0.4" opacity="0.3"/>
+                  <circle cx="40" cy="40" r="8" fill="none" stroke="var(--accent)" stroke-width="0.5" opacity="0.4"/>
+                  <circle cx="40" cy="40" r="20" fill="none" stroke="var(--accent)" stroke-width="0.3" opacity="0.2"/>
+                </g>
+                <!-- Scan animation line -->
+                <g clip-path="url(#hexClip)">
+                  <rect x="2" y="0" width="76" height="8" fill="url(#scanGrad)" opacity="0.5">
+                    <animateTransform attributeName="transform" type="translate" values="0,0;0,80;0,0" dur="3s" repeatCount="indefinite"/>
+                  </rect>
+                </g>
+                <!-- Corner marks -->
+                <g stroke="var(--accent)" stroke-width="1.5" opacity="0.9" fill="none">
+                  <path d="M8 8 L8 14 M8 8 L14 8"/>
+                  <path d="M72 8 L72 14 M72 8 L66 8"/>
+                  <path d="M8 72 L8 66 M8 72 L14 72"/>
+                  <path d="M72 72 L72 66 M72 72 L66 72"/>
+                </g>
+              </svg>
+              <div class="avatar-ring"></div>
+              <div class="avatar-ring-2"></div>
+            </div>
+            <div>
+              <div class="dossier-name">Aryan Maharjan</div>
+              <div class="dossier-id">// ANALYST_ID: AM-2001-KTM</div>
+            </div>
+          </div>
+
+          <!-- CERTS -->
+          <div class="dossier-section-label">Credentials</div>
+          <div class="cert-pills">
+            <span class="cert-pill">Security+</span>
+            <span class="cert-pill">Network+</span>
+            <span class="cert-pill">CC · ISC2</span>
+            <span class="cert-pill">APIsec</span>
+            <span class="cert-pill">CAP</span>
+            <span class="cert-pill">CNSP</span>
+            <span class="cert-pill">CCEP</span>
+          </div>
+
+          <!-- FRAMEWORK BARS -->
+          <div class="dossier-section-label">Framework Depth</div>
+          <div class="framework-list" id="fwList">
+            <div class="framework-row">
+              <span class="fw-name">HITRUST CSF</span>
+              <div class="fw-bar-wrap"><div class="fw-bar" style="--delay:0.1s" data-w="0.95"></div></div>
+              <span class="fw-pct">95%</span>
+            </div>
+            <div class="framework-row">
+              <span class="fw-name">HIPAA/HITECH</span>
+              <div class="fw-bar-wrap"><div class="fw-bar" style="--delay:0.2s" data-w="0.92"></div></div>
+              <span class="fw-pct">92%</span>
+            </div>
+            <div class="framework-row">
+              <span class="fw-name">SOC 2 Type II</span>
+              <div class="fw-bar-wrap"><div class="fw-bar" style="--delay:0.3s" data-w="0.88"></div></div>
+              <span class="fw-pct">88%</span>
+            </div>
+            <div class="framework-row">
+              <span class="fw-name">ISO 27001</span>
+              <div class="fw-bar-wrap"><div class="fw-bar" style="--delay:0.4s" data-w="0.85"></div></div>
+              <span class="fw-pct">85%</span>
+            </div>
+            <div class="framework-row">
+              <span class="fw-name">NIST CSF</span>
+              <div class="fw-bar-wrap"><div class="fw-bar" style="--delay:0.5s" data-w="0.80"></div></div>
+              <span class="fw-pct">80%</span>
+            </div>
+          </div>
+
+          <!-- STATUS FOOTER -->
+          <div class="dossier-footer">
+            <div class="status-live">Open to Hire</div>
+            <div class="social-links">
+              <a href="https://www.linkedin.com/in/aryan-maharjan/" target="_blank" class="social-link" title="LinkedIn">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+              </a>
+              <a href="https://github.com/iceyyspicyy" target="_blank" class="social-link" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ABOUT ═══════════════ -->
+<section id="about">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">
+        <span class="sec-num">01</span>
+        <div class="sec-rule"></div>
+        <span class="sec-label">About</span>
+      </div>
+      <h2 class="sec-title">The work<br>I do.</h2>
+    </div>
+
+    <div class="about-layout">
+      <div class="about-text reveal">
+        <p>I am a <strong>GRC and Third-Party Risk Management professional</strong> based in Kathmandu, Nepal. For the past year I have been a contractor supporting a <em>Fortune 500 healthcare enterprise</em> through SecurityPal, conducting end-to-end vendor risk assessments against HITRUST CSF, CRF, HIPAA, SOC 2, ISO 27001, and GDPR.</p>
+        <p>My job is stress-testing what vendors say about themselves. I go through policies, map controls to regulatory requirements, identify gaps, and present findings to <strong>senior leadership for approval</strong>. I've done this across <em>20+ vendors</em> including some of the most well-known names in enterprise technology.</p>
+        <p>Before GRC I worked in <strong>SOC operations</strong>, vulnerability assessment, and network security. I also spent a year in AI data annotation where I was promoted to <em>Quality Auditor within 2 months</em> of joining as a fresher.</p>
+      </div>
+
+      <div class="about-right reveal" style="transition-delay:0.15s">
+        <div class="about-card">
+          <div class="about-card-num">01 ·</div>
+          <h4>Vendor Risk Assessment</h4>
+          <p>Validating HITRUST CSF and CRF submissions, reviewing evidence packages, identifying misrepresentations across 20+ enterprise vendors.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-num">02 ·</div>
+          <h4>Compliance Documentation</h4>
+          <p>Producing audit-ready risk reports, scorecards, and mapping documents aligned to HIPAA, SOC 2, ISO 27001, and GDPR.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-num">03 ·</div>
+          <h4>PHI/PII Governance</h4>
+          <p>Evaluating vendor data classification, retention policies, encryption standards, and HIPAA breach notification obligations.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-num">04 ·</div>
+          <h4>Security Operations</h4>
+          <p>Background in SOC log analysis, threat detection using Splunk SIEM, and vulnerability assessment with CVSS-based prioritization.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ EXPERIENCE ═══════════════ -->
+<section id="experience">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">
+        <span class="sec-num">02</span>
+        <div class="sec-rule"></div>
+        <span class="sec-label">Experience</span>
+      </div>
+      <h2 class="sec-title">Where I've<br>worked.</h2>
+    </div>
+
+    <div class="exp-grid">
+      <div class="exp-years">
+        <div class="exp-year-item">25</div>
+      </div>
+      <div class="exp-entries">
+
+        <div class="exp-entry current-role">
+          <div class="exp-meta">
+            <span class="exp-date">Apr 2025 – Present</span>
+            <span class="exp-badge badge-live">Live</span>
+            <span class="exp-badge badge-contract">F500 Contractor</span>
+          </div>
+          <div class="exp-role">Security Research Analyst</div>
+          <div class="exp-company">SecurityPal · Supporting Humana (Fortune 500)</div>
+          <div class="exp-body">
+            <ul>
+              <li>Conduct end-to-end TPRM assessments for a Fortune 500 healthcare enterprise, validating HITRUST CSF and CRF assessments across 20+ technology vendors.</li>
+              <li>Validate vendor compliance posture against HIPAA/HITECH, SOC 2 Type II, ISO 27001, GDPR, and NIST CSF through evidence review and policy analysis.</li>
+              <li>Perform detailed security policy reviews, mapping vendor controls and identifying gaps in PHI/PII handling, access management, and incident response.</li>
+              <li>Prepare audit-ready risk reports and scorecards, presenting findings to senior GRC leadership.</li>
+              <li>Reduced average remediation closure timelines by 25% through cross-functional collaboration.</li>
+              <li>Maintain internal AI-powered compliance knowledge library, reducing downstream errors by 30%.</li>
+            </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">HITRUST CSF</span><span class="exp-tag">HIPAA</span><span class="exp-tag">SOC 2</span><span class="exp-tag">ISO 27001</span><span class="exp-tag">GDPR</span><span class="exp-tag">TPRM</span><span class="exp-tag">Risk Reporting</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-entry current-role">
+          <div class="exp-meta">
+            <span class="exp-date">Sep 2025 – Present</span>
+            <span class="exp-badge badge-live">Live</span>
+          </div>
+          <div class="exp-role">AI Data Specialist</div>
+          <div class="exp-company">RWS Group · Remote</div>
+          <div class="exp-body">
+            <ul>
+              <li>Perform data collection, evaluation, and annotation tasks supporting AI/ML model development across audio, video, image, and text modalities.</li>
+              <li>Execute pairwise comparisons, object tagging, and content classification with strict adherence to project guidelines.</li>
+            </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">Data Annotation</span><span class="exp-tag">AI/ML</span><span class="exp-tag">QA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-entry">
+          <div class="exp-meta">
+            <span class="exp-date">Apr 2024 – Feb 2025</span>
+          </div>
+          <div class="exp-role">AI Data Specialist → Quality Auditor</div>
+          <div class="exp-company">CloudFactory · Remote</div>
+          <div class="exp-body">
+            <ul>
+              <li>Annotated and validated 10,000+ data points for AI/ML model training across education and content intelligence projects.</li>
+              <li>Maintained 98%+ accuracy rate in data labeling through rigorous quality control.</li>
+              <li>Promoted to Quality Auditor within 2 months, reviewing the work of experienced peers.</li>
+            </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">Data Annotation</span><span class="exp-tag">Quality Audit</span><span class="exp-tag">AI Training</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-entry">
+          <div class="exp-meta">
+            <span class="exp-date">Dec 2023 – Apr 2024</span>
+          </div>
+          <div class="exp-role">Cybersecurity Intern — SOC &amp; Vuln Mgmt</div>
+          <div class="exp-company">TeamOne Technologies</div>
+          <div class="exp-body">
+            <ul>
+              <li>Assisted in SOC operations including log analysis, vulnerability assessments, and threat detection using Linux CLI, Python automation, and Splunk SIEM.</li>
+              <li>Conducted vulnerability scans and supported triage aligned with CVSS scoring standards.</li>
+            </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">Splunk</span><span class="exp-tag">Python</span><span class="exp-tag">SOC</span><span class="exp-tag">CVSS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-entry">
+          <div class="exp-meta">
+            <span class="exp-date">May 2023 – Aug 2023</span>
+          </div>
+          <div class="exp-role">Network &amp; Security Intern</div>
+          <div class="exp-company">Classic Tech (ISP) · Kathmandu</div>
+          <div class="exp-body">
+            <ul>
+              <li>Supported network configuration, security monitoring, and troubleshooting in a live ISP environment.</li>
+              <li>Gained hands-on experience with routing protocols, firewall rule management, and network access controls.</li>
+            </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">Networking</span><span class="exp-tag">Firewall</span><span class="exp-tag">Routing</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SKILLS ═══════════════ -->
+<section id="skills">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">
+        <span class="sec-num">03</span>
+        <div class="sec-rule"></div>
+        <span class="sec-label">Skills</span>
+      </div>
+      <h2 class="sec-title">Technical<br>toolkit.</h2>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-cell reveal">
+        <div class="skill-cell-num">01</div>
+        <h4>GRC &amp; Compliance</h4>
+        <div class="skill-tags">
+          <span class="s-tag">HITRUST CSF</span><span class="s-tag">HIPAA</span><span class="s-tag">SOC 2</span><span class="s-tag">ISO 27001</span><span class="s-tag">GDPR</span><span class="s-tag">NIST CSF</span><span class="s-tag">PCI DSS</span><span class="s-tag">FedRAMP</span>
+        </div>
+      </div>
+      <div class="skill-cell reveal" style="transition-delay:0.05s">
+        <div class="skill-cell-num">02</div>
+        <h4>Third-Party Risk</h4>
+        <div class="skill-tags">
+          <span class="s-tag">TPRM</span><span class="s-tag">Vendor Due Diligence</span><span class="s-tag">Risk Scoring</span><span class="s-tag">SIG/VSQ</span><span class="s-tag">Control Mapping</span><span class="s-tag">PHI/PII Governance</span>
+        </div>
+      </div>
+      <div class="skill-cell reveal" style="transition-delay:0.1s">
+        <div class="skill-cell-num">03</div>
+        <h4>Security Operations</h4>
+        <div class="skill-tags">
+          <span class="s-tag">Splunk SIEM</span><span class="s-tag">Log Analysis</span><span class="s-tag">Vulnerability Assessment</span><span class="s-tag">CVSS</span><span class="s-tag">MITRE ATT&amp;CK</span><span class="s-tag">OWASP</span>
+        </div>
+      </div>
+      <div class="skill-cell reveal" style="transition-delay:0.05s">
+        <div class="skill-cell-num">04</div>
+        <h4>AI &amp; Data</h4>
+        <div class="skill-tags">
+          <span class="s-tag">Data Annotation</span><span class="s-tag">QA &amp; Auditing</span><span class="s-tag">RLHF</span><span class="s-tag">Dataset Curation</span><span class="s-tag">Content Moderation</span>
+        </div>
+      </div>
+      <div class="skill-cell reveal" style="transition-delay:0.1s">
+        <div class="skill-cell-num">05</div>
+        <h4>Cloud &amp; Infra</h4>
+        <div class="skill-tags">
+          <span class="s-tag">AWS</span><span class="s-tag">Docker</span><span class="s-tag">Kubernetes</span><span class="s-tag">Terraform</span><span class="s-tag">Linux</span><span class="s-tag">Virtualization</span>
+        </div>
+      </div>
+      <div class="skill-cell reveal" style="transition-delay:0.15s">
+        <div class="skill-cell-num">06</div>
+        <h4>Documentation</h4>
+        <div class="skill-tags">
+          <span class="s-tag">Risk Reports</span><span class="s-tag">SOPs</span><span class="s-tag">Audit Evidence</span><span class="s-tag">Jira</span><span class="s-tag">Confluence</span><span class="s-tag">Technical Writing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CERTIFICATIONS ═══════════════ -->
+<section id="certifications">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">
+        <span class="sec-num">04</span>
+        <div class="sec-rule"></div>
+        <span class="sec-label">Certifications</span>
+      </div>
+      <h2 class="sec-title">Credentials.</h2>
+    </div>
+
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-card-num">CERT-001</div>
+        <div class="cert-issuer-badge">CompTIA</div>
+        <div class="cert-card-name">Security+ ce</div>
+      </div>
+      <div class="cert-card reveal" style="transition-delay:0.05s">
+        <div class="cert-card-num">CERT-002</div>
+        <div class="cert-issuer-badge">CompTIA</div>
+        <div class="cert-card-name">Network+ ce</div>
+      </div>
+      <div class="cert-card reveal" style="transition-delay:0.1s">
+        <div class="cert-card-num">CERT-003</div>
+        <div class="cert-issuer-badge">ISC2</div>
+        <div class="cert-card-name">Certified in Cybersecurity (CC)</div>
+      </div>
+      <div class="cert-card reveal" style="transition-delay:0.15s">
+        <div class="cert-card-num">CERT-004</div>
+        <div class="cert-issuer-badge">APIsec University</div>
+        <div class="cert-card-name">APIsec Certified Practitioner</div>
+      </div>
+      <div class="cert-card reveal" style="transition-delay:0.1s">
+        <div class="cert-card-num">CERT-005</div>
+        <div class="cert-issuer-badge">The SecOps Group</div>
+        <div class="cert-card-name">Certified AppSec Practitioner (CAP)</div>
+      </div>
+      <div class="cert-card reveal" style="transition-delay:0.15s">
+        <div class="cert-card-num">CERT-006</div>
+        <div class="cert-issuer-badge">The SecOps Group</div>
+        <div class="cert-card-name">Certified Network Security Practitioner (CNSP)</div>
+      </div>
+      <div class="cert-card reveal" style="transition-delay:0.2s">
+        <div class="cert-card-num">CERT-007</div>
+        <div class="cert-issuer-badge">Red Team Leaders</div>
+        <div class="cert-card-name">Certified Cybersecurity Educator Professional (CCEP)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PROJECTS ═══════════════ -->
+<section id="projects">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">
+        <span class="sec-num">05</span>
+        <div class="sec-rule"></div>
+        <span class="sec-label">Projects</span>
+      </div>
+      <h2 class="sec-title">Work I'm<br>proud of.</h2>
+    </div>
+
+    <div class="projects-layout">
+      <div class="project-card span2 reveal">
+        <div class="proj-num">01 — Featured</div>
+        <div class="proj-title">HITRUST / CRF Vendor Assessment Program</div>
+        <p class="proj-desc">Reviewed and validated 20+ vendor risk assessments against HITRUST CSF r2 and CRF frameworks as part of a Fortune 500 healthcare company's third-party risk program. Developed standardized control mapping templates that improved assessment review efficiency by 40%.</p>
+        <div class="proj-metrics">
+          <div>
+            <div class="proj-metric-val">20<span style="font-size:18px;color:var(--text3)">+</span></div>
+            <div class="proj-metric-lbl">Vendors</div>
+          </div>
+          <div>
+            <div class="proj-metric-val">40%</div>
+            <div class="proj-metric-lbl">Efficiency Gain</div>
+          </div>
+          <div>
+            <div class="proj-metric-val">25%</div>
+            <div class="proj-metric-lbl">Faster Remediation</div>
+          </div>
+        </div>
+        <div class="proj-tags">
+          <span class="p-tag">HITRUST</span><span class="p-tag">CRF</span><span class="p-tag">HIPAA</span><span class="p-tag">SOC 2</span><span class="p-tag">TPRM</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal" style="transition-delay:0.1s">
+        <div class="proj-num">02</div>
+        <div class="proj-title">CK-12 Flexi: STEM Content QA</div>
+        <p class="proj-desc">Structured and validated 1,500+ Science and Math questions for an adaptive AI learning platform. Tagged content by Bloom's Taxonomy level across 20+ learning modules.</p>
+        <div class="proj-metrics">
+          <div>
+            <div class="proj-metric-val">1.5k</div>
+            <div class="proj-metric-lbl">Questions</div>
+          </div>
+          <div>
+            <div class="proj-metric-val">30%</div>
+            <div class="proj-metric-lbl">Error Reduction</div>
+          </div>
+        </div>
+        <div class="proj-tags">
+          <span class="p-tag">Content QA</span><span class="p-tag">AI Training</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal" style="transition-delay:0.15s">
+        <div class="proj-num">03</div>
+        <div class="proj-title">CBSE Academic Content Validation</div>
+        <p class="proj-desc">Reviewed and validated 2,000+ questions across Science, Math, and English for grades 6–12, formatted for integration into AI-based assessment systems used by 10+ ed-tech platforms.</p>
+        <div class="proj-metrics">
+          <div>
+            <div class="proj-metric-val">2k</div>
+            <div class="proj-metric-lbl">Questions</div>
+          </div>
+          <div>
+            <div class="proj-metric-val">100%</div>
+            <div class="proj-metric-lbl">Accuracy</div>
+          </div>
+        </div>
+        <div class="proj-tags">
+          <span class="p-tag">Validation</span><span class="p-tag">EdTech</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<section id="contact">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">
+        <span class="sec-num">06</span>
+        <div class="sec-rule"></div>
+        <span class="sec-label">Contact</span>
+      </div>
+      <h2 class="sec-title">Let's work<br>together.</h2>
+    </div>
+
+    <div class="contact-layout">
+      <div class="contact-left reveal">
+        <p>Open to GRC analyst roles, TPRM contracts, and compliance consulting. If you're hiring or want to discuss a contract, book a call directly or reach out below.</p>
+        <div class="contact-links-list">
+          <a href="mailto:aryan.maharjan2001@gmail.com" class="contact-link-item">
+            <span class="cli-icon">@</span>
+            <span class="cli-label">aryan.maharjan2001@gmail.com</span>
+          </a>
+          <a href="https://www.linkedin.com/in/aryan-maharjan/" target="_blank" class="contact-link-item">
+            <span class="cli-icon">in</span>
+            <span class="cli-label">linkedin.com/in/aryan-maharjan</span>
+          </a>
+          <a href="https://github.com/iceyyspicyy" target="_blank" class="contact-link-item">
+            <span class="cli-icon">gh</span>
+            <span class="cli-label">github.com/iceyyspicyy</span>
+          </a>
+          <a href="tel:+9779762283897" class="contact-link-item">
+            <span class="cli-icon">☏</span>
+            <span class="cli-label">+977 976 228 3897</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay:0.2s">
+        <div class="cal-card">
+          <div class="cal-header">
+            <h4>Book a 30-Min Call</h4>
+            <p>// Schedule directly — no back and forth</p>
+          </div>
+          <div class="cal-body">
+            <iframe
+              src="https://cal.com/aryan-maharjan?embed=true&theme=dark&hideEventTypeDetails=false&layout=month_view"
+              width="100%"
+              height="480"
+              frameborder="0"
+              style="border:none;background:transparent;"
+              title="Book a call with Aryan Maharjan"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-left">© 2026 Aryan Maharjan · GRC Analyst · Kathmandu, Nepal</div>
+      <div class="footer-right">
+        <a href="https://www.linkedin.com/in/aryan-maharjan/" target="_blank">LinkedIn</a>
+        <a href="https://github.com/iceyyspicyy" target="_blank">GitHub</a>
+        <a href="mailto:aryan.maharjan2001@gmail.com">Email</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══ CUSTOM CURSOR ═══ */
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = -100, my = -100, rx = -100, ry = -100;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px';
+  dot.style.top = my + 'px';
+});
+
+(function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.querySelectorAll('a, button, .theme-toggle, .about-card, .cert-card, .project-card, .skill-cell, .exp-entry').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    dot.style.width = '12px'; dot.style.height = '12px';
+    ring.style.width = '52px'; ring.style.height = '52px';
+    ring.style.opacity = '0.8';
+  });
+  el.addEventListener('mouseleave', () => {
+    dot.style.width = '6px'; dot.style.height = '6px';
+    ring.style.width = '32px'; ring.style.height = '32px';
+    ring.style.opacity = '0.5';
+  });
+});
+
+/* ═══ SCROLL PROGRESS ═══ */
+const scrollLine = document.getElementById('scrollLine');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  scrollLine.style.width = (pct * 100) + '%';
+});
+
+/* ═══ THEME TOGGLE ═══ */
+const html = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+let currentTheme = localStorage.getItem('am-theme') || 'dark';
+html.setAttribute('data-theme', currentTheme);
+
+themeToggle.addEventListener('click', () => {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', currentTheme);
+  localStorage.setItem('am-theme', currentTheme);
+  // Update cal.com embed theme
+  const calIframe = document.querySelector('.cal-body iframe');
+  if (calIframe) {
+    const newSrc = calIframe.src.replace(/theme=(dark|light)/, `theme=${currentTheme}`);
+    calIframe.src = newSrc;
+  }
+});
+
+/* ═══ MOBILE MENU ═══ */
+const hamburger = document.getElementById('hamburger');
+const mobileDrawer = document.getElementById('mobileDrawer');
+
+hamburger.addEventListener('click', () => {
+  mobileDrawer.classList.toggle('open');
+});
+
+function closeMobileDrawer() {
+  mobileDrawer.classList.remove('open');
+}
+
+/* ═══ SCROLL ANIMATIONS ═══ */
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .exp-entry').forEach(el => {
+  if (el.classList.contains('exp-entry')) {
+    const expObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('vis');
+          expObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    expObs.observe(el);
+  } else {
+    revealObs.observe(el);
+  }
+});
+
+/* ═══ FRAMEWORK BARS ═══ */
+const barObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.fw-bar').forEach(bar => {
+        bar.classList.add('animated');
+      });
+      barObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const fwList = document.getElementById('fwList');
+if (fwList) barObs.observe(fwList);
+
+// Trigger immediately if in view on load
+setTimeout(() => {
+  if (fwList) {
+    const rect = fwList.getBoundingClientRect();
+    if (rect.top < window.innerHeight) {
+      fwList.querySelectorAll('.fw-bar').forEach(bar => bar.classList.add('animated'));
+    }
+  }
+}, 500);
+
+/* ═══ ACTIVE NAV ═══ */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 140) current = sec.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = '';
+    if (a.getAttribute('href') === '#' + current) {
+      a.style.color = 'var(--accent)';
+    }
+  });
+}, { passive: true });
+
+/* ═══ INITIAL REVEALS ═══ */
+document.querySelectorAll('.reveal').forEach(el => {
+  const rect = el.getBoundingClientRect();
+  if (rect.top < window.innerHeight * 0.9) el.classList.add('in');
+});
+</script>
+</body>
+</html>
